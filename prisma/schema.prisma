@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model VampLevels {
+  id    Int     @id @unique
+  name  String
+  exp Int
+  level Int
+}
+
+
+model BotCommands {
+ command_id Int @id @unique
+ command_name String
+ usage_count Int
+ category String
+ last_used DateTime
+
+ @@map("bot_commands")
+}
+
+model Settings {
+  id String @id @unique
+  guildid String
+  command String
+  category String
+  turnedOn String
+}
