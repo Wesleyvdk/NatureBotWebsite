@@ -1,6 +1,5 @@
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { auth } from "~/auth.server";
-import { LeaderboardTable } from "~/components/leaderboardTable";
 import Nav from "~/components/nav";
 import { db } from "~/db.server";
 import CategoryCard from "~/components/ui/categorycard";
@@ -24,7 +23,9 @@ export default function PlaygroundPage() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <Nav />
-      <CategoryCard commands={commands} />
+      <main className="p-4 md:p-10 mx-auto max-w-7xl">
+        <CategoryCard commands={commands} />
+      </main>
     </div>
   );
 }

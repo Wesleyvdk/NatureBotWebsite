@@ -37,5 +37,5 @@ model Settings {
   guildid String
   command String
   category String
-  turnedOn String
+  turnedOn Int
 }

@@ -10,10 +10,31 @@ import {
 } from "~/components/ui/navigation-menu";
 import { Button } from "~/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "~/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "~/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 
 import { useHref, Form } from "@remix-run/react";
+import React from "react";
 
-export function Navbar({ user }: { user: any }) {
+export function Navbar({
+  user,
+  commonGuilds,
+}: {
+  user: any;
+  commonGuilds: Guild[];
+}) {
   const navigation = [
     { id: 1, name: "Home", href: "/" },
     { id: 2, name: "Dashboard", href: "/dashboard" },
@@ -21,6 +42,10 @@ export function Navbar({ user }: { user: any }) {
     { id: 4, name: "Playground", href: "/playground" },
     { id: 5, name: "Shop", href: "/shop" },
   ];
+
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+
   const noUserPages = ["Home", "Playground"];
   const noUserPagesItem = navigation.filter((item) =>
     noUserPages.includes(item.name)
@@ -114,11 +139,61 @@ export function Navbar({ user }: { user: any }) {
             </div> */}
             <NavigationMenuList className="absolute right-0">
               {user ? (
-                <NavigationMenuItem>
-                  <Form method="post" action="/logout">
-                    <Button type="submit">Logout</Button>
-                  </Form>
-                </NavigationMenuItem>
+                <div>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[200px] justify-between"
+                      >
+                        {value
+                          ? commonGuilds.find(
+                              (commonGuild: Guild) => commonGuild.name === value
+                            )?.name
+                          : "Select Servers..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search Servers..." />
+                        <CommandEmpty>No Servers found.</CommandEmpty>
+                        <CommandGroup>
+                          {commonGuilds.map((commonGuild: any) => (
+                            <CommandItem
+                              key={commonGuild.id}
+                              value={commonGuild.name}
+                              onSelect={(currentValue) => {
+                                setValue(
+                                  currentValue === value ? "" : currentValue
+                                );
+                                setOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  value === commonGuild.name
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {commonGuild.name.toLowerCase()}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  <NavigationMenuItem>
+                    <Form method="post" action="/logout">
+                      <Button type="submit">Logout</Button>
+                    </Form>
+                  </NavigationMenuItem>
+                </div>
               ) : (
                 <NavigationMenuItem>
                   <Form method="post" action="/auth/discord">

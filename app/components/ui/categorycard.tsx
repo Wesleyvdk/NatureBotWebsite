@@ -1,34 +1,5 @@
-import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { Card, Metric, Text, Title, BarList, Flex, Grid } from "@tremor/react";
-/* import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"; */
-import { Switch } from "~/components/ui/switch";
-
-interface Command {
-  command_id: number;
-  command_name: string;
-  category: string;
-  usage_count: number;
-  last_used: Date;
-}
-
-interface CommandSummary {
-  name: string;
-  value: number;
-}
-
-interface CategoryData {
-  category: string;
-  stat: string;
-  data: CommandSummary[];
-}
 
 export default function CategoryCard({ commands }: { commands: Command[] }) {
   const categoryMap = new Map<
@@ -56,32 +27,6 @@ export default function CategoryCard({ commands }: { commands: Command[] }) {
     })
   );
   return (
-    /*     <div className="grid gap-6 grid-cols-3 auto-rows-auto">
-      {data.map((item) => (
-        <Card key={item.category}>
-          <CardHeader>
-            <CardTitle>{item.category}</CardTitle>
-          </CardHeader>
-
-          <CardContent className="justify-content">
-            <p>{item.stat}</p>
-            <p>Total Times Used</p>
-
-            <div className="justify-start items-baseline mt-6">
-              <p>Commands</p>
-              <p className="text-right">Times Used</p>
-            </div>
-            <BarList
-              data={item.data}
-              value={(number: number) =>
-                Intl.NumberFormat("us").format(number).toString()
-              }
-              className="mt-2"
-            />
-          </CardContent>
-        </Card>
-      ))}
-    </div> */
     <Grid numItemsSm={2} numItemsLg={3} className="gap-6">
       {data.map((item) => (
         <Card key={item.category}>

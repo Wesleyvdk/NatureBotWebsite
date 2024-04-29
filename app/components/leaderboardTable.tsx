@@ -15,18 +15,9 @@ import { json } from "@remix-run/node";
 
 import { db } from "~/db.server";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  return json(await db.vampLevels.findMany({}));
-};
-
-const LeaderboardTable = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const users = useLoaderData<typeof loader>();
+export default function LeaderboardTable({ users }: { users: leaderboard[] }) {
   return (
     <Table>
-      <TableCaption>Server name</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">name</TableHead>
@@ -45,7 +36,4 @@ const LeaderboardTable = React.forwardRef<
       </TableBody>
     </Table>
   );
-});
-LeaderboardTable.displayName = "LeaderboardTable";
-
-export { LeaderboardTable };
+}
