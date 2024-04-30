@@ -25,22 +25,17 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 
-import { useHref, Form } from "@remix-run/react";
+import { useHref, Form, Link } from "@remix-run/react";
 import React from "react";
 
-export function Navbar({
-  user,
-  commonGuilds,
-}: {
-  user: any;
-  commonGuilds: Guild[];
-}) {
+export function Navbar({ user }: { user: any }) {
   const navigation = [
     { id: 1, name: "Home", href: "/" },
-    { id: 2, name: "Dashboard", href: "/dashboard" },
-    { id: 3, name: "Leaderboard", href: "/leaderboard" },
-    { id: 4, name: "Playground", href: "/playground" },
-    { id: 5, name: "Shop", href: "/shop" },
+    /*  { id: 2, name: "Dashboard", href: "/dashboard" },
+    { id: 3, name: "Leaderboard", href: "/leaderboard" }, */
+    { id: 2, name: "Servers", href: "/servers" },
+    { id: 3, name: "Playground", href: "/playground" },
+    { id: 4, name: "Shop", href: "/shop" },
   ];
 
   const [open, setOpen] = React.useState(false);
@@ -140,55 +135,19 @@ export function Navbar({
             <NavigationMenuList className="absolute right-0">
               {user ? (
                 <div>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        className="w-[200px] justify-between"
-                      >
-                        {value
-                          ? commonGuilds.find(
-                              (commonGuild: Guild) => commonGuild.name === value
-                            )?.name
-                          : "Select Servers..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search Servers..." />
-                        <CommandEmpty>No Servers found.</CommandEmpty>
-                        <CommandGroup>
-                          {commonGuilds.map((commonGuild: any) => (
-                            <CommandItem
-                              key={commonGuild.id}
-                              value={commonGuild.name}
-                              onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? "" : currentValue
-                                );
-                                setOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === commonGuild.name
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {commonGuild.name.toLowerCase()}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
                   <NavigationMenuItem>
+                    {/*  <Button>
+                      <Link to="/profile">
+                        <Avatar>
+                          <AvatarImage
+                            src={
+                              user.avatar ||
+                              "https://avatar.vercel.sh/leerob.png"
+                            }
+                          />
+                        </Avatar>
+                      </Link>
+                    </Button> */}
                     <Form method="post" action="/logout">
                       <Button type="submit">Logout</Button>
                     </Form>

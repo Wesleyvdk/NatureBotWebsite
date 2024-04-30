@@ -4,7 +4,7 @@ import { auth } from "~/auth.server";
 
 export let loader: LoaderFunction = ({ request }) => {
   return auth.authenticate("discord", request, {
-    successRedirect: "/dashboard",
+    successRedirect: "/profile",
     failureRedirect: "/login",
   });
 };
