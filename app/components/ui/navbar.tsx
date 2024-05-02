@@ -75,7 +75,7 @@ export function Navbar({ user }: { user: any }) {
           </div>
           <NavigationMenu>
             <NavigationMenuList>
-              {user ? (
+              {user.authenticated ? (
                 <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                   {navigation.map((item) => (
                     <NavigationMenuItem key={item.id}>
@@ -122,37 +122,26 @@ export function Navbar({ user }: { user: any }) {
           </NavigationMenu>
         </div>
         <div className="hidden sm:ml-6 sm:flex sm:items-center">
-          <NavigationMenu className="relative ml-3">
-            {/* <div>
-              <Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-                <span className="sr-only">Open user menu</span>
-                <Avatar>
-                  <AvatarImage src={"https://avatar.vercel.sh/leerob.png"} />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </Button>
-            </div> */}
-            <NavigationMenuList className="absolute right-0">
-              {user ? (
-                <div>
-                  <NavigationMenuItem>
-                    {/*  <Button>
-                      <Link to="/profile">
-                        <Avatar>
-                          <AvatarImage
-                            src={
-                              user.avatar ||
-                              "https://avatar.vercel.sh/leerob.png"
-                            }
-                          />
-                        </Avatar>
-                      </Link>
-                    </Button> */}
-                    <Form method="post" action="/logout">
-                      <Button type="submit">Logout</Button>
-                    </Form>
-                  </NavigationMenuItem>
-                </div>
+          <NavigationMenu className="right-0">
+            <NavigationMenuList className="">
+              {user.authenticated ? (
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>
+                    <Avatar>
+                      <AvatarImage
+                        src={`https://cdn.discordapp.com/avatars/${user.authenticated.id}/${user.authenticated.avatar}`}
+                      />
+                    </Avatar>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-3 p-6">
+                      <ListItem href="/profile" title="Profile"></ListItem>
+                      <Form method="post" action="/logout">
+                        <Button type="submit">Logout</Button>
+                      </Form>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
               ) : (
                 <NavigationMenuItem>
                   <Form method="post" action="/auth/discord">
@@ -167,3 +156,29 @@ export function Navbar({ user }: { user: any }) {
     </div>
   );
 }
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";

@@ -12,7 +12,6 @@ import { sessionStorage } from "~/session.server";
 type CustomDiscordGuild = Omit<PartialDiscordGuild, "features">;
 
 export interface DiscordUser {
-  profile: DiscordProfile;
   id: DiscordProfile["id"];
   displayName: DiscordProfile["displayName"];
   avatar: DiscordProfile["__json"]["avatar"];
@@ -74,7 +73,6 @@ const discordStrategy = new DiscordStrategy(
      * and only returning the data that you actually need for your application.
      */
     return {
-      profile: profile,
       id: profile.id,
       displayName: profile.displayName,
       avatar: profile.__json.avatar,

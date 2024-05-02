@@ -7,6 +7,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export let loader: LoaderFunction = async ({ request }) => {
+  console.log("Logging in");
   return await auth.isAuthenticated(request, {
     successRedirect: "/",
     failureRedirect: "/login",

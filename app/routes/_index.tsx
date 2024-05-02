@@ -11,13 +11,11 @@ export const meta: MetaFunction = () => {
 };
 export let loader: LoaderFunction = async ({ request }) => {
   const authenticated = await auth.isAuthenticated(request, {});
-
   return { authenticated };
 };
 
 export default function Index() {
   const { authenticated } = useLoaderData<typeof loader>();
-
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <Nav />
