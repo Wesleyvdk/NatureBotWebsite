@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-export default function DashboardCard({ settings }: { settings: Settings[] }) {
+export default function SettingsCard({ settings }: { settings: Settings[] }) {
   const categoryMap = new Map<string, { settings: SettingsSummary[] }>();
 
   settings.forEach((command) => {

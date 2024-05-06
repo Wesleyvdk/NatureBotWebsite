@@ -4,7 +4,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { auth } from "~/auth.server";
 import Nav from "~/components/nav";
-import { Card, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export let loader: LoaderFunction = async ({ request }) => {
   const authenticated = await auth.isAuthenticated(request, {});
@@ -16,7 +16,7 @@ export let loader: LoaderFunction = async ({ request }) => {
     commonGuilds = userGuilds.filter((userGuild: any) =>
       botGuilds.some((botGuild: any) => botGuild.id === userGuild.id)
     );
-    commonGuilds = commonGuilds.filter((guild: any) => guild.owner === true);
+    //commonGuilds = commonGuilds.filter((guild: any) => guild.owner === true);
   }
 
   return { authenticated, commonGuilds };
@@ -27,17 +27,41 @@ export default function Servers() {
   return (
     <div>
       <Nav />
-      {commonGuilds.map((guild: Guild) => (
-        <Button key={guild.id} asChild>
-          <Link to={`/${guild.id}/dashboard`}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{guild.name}</CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-        </Button>
-      ))}
+      <div className="flex items-center justify-center mt-10">
+        <div className="grid grid-cols-2 gap-4">
+          {commonGuilds.map((guild: Guild) => (
+            <Button key={guild.id} asChild>
+              <Link to={`/${guild.id}/dashboard`}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{guild.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-400">Members</p>
+                        <p className="text-lg font-semibold">
+                          {guild.approximate_member_count}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400">Online</p>
+                        <p className="text-lg font-semibold">
+                          {guild.approximate_presence_count}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400">Uptime</p>
+                        <p className="text-lg font-semibold">99.9%</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </Button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

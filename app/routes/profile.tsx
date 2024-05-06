@@ -8,7 +8,7 @@ import {
   unstable_parseMultipartFormData,
   writeAsyncIterableToWritable,
 } from "@remix-run/node";
-import { useLoaderData, Form } from "@remix-run/react";
+import { useLoaderData, Form, useActionData } from "@remix-run/react";
 import { DiscordUser, auth } from "~/auth.server";
 import Nav from "~/components/nav";
 import { Button } from "~/components/ui/button";
@@ -37,11 +37,21 @@ import {
   ListObjectsV2Command,
   GetObjectCommand,
   PutObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Upload } from "@aws-sdk/lib-storage";
+import { sessionStorage } from "~/session.server";
 
 export let loader: LoaderFunction = async ({ request }) => {
+  const S3 = new S3Client({
+    region: "auto",
+    endpoint: process.env.CLOUDFLARE_S3!,
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY_ID!,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+    },
+  });
+
   const authenticated = await auth.isAuthenticated(request, {
     failureRedirect: "/login",
   });
@@ -54,10 +64,30 @@ export let loader: LoaderFunction = async ({ request }) => {
     );
   }
 
-  return { authenticated, commonGuilds };
+  const image = new ListObjectsV2Command({
+    Bucket: "aylani",
+    Prefix: `uploads/${authenticated.id}`, // Only list objects that start with the user ID
+  });
+  if (image) {
+    const { Contents } = await S3.send(image);
+    const files = Contents!.map((item: any) => ({
+      key: item.Key,
+      url: process.env.CLOUDFLARE_S3! + "/" + item.Key,
+    }));
+    console.log(files);
+    return { authenticated, commonGuilds, files };
+  } else {
+    let file =
+      "https://raw.githubusercontent.com/Wesleyvdk/images/main/1ec06e9864d623549da40633c679cc2a.webp";
+    return { authenticated, commonGuilds, file, S3 };
+  }
 };
-// FIX FORM FILE DATA UPLOAD
+
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const session = await sessionStorage.getSession(
+    request.headers.get("Cookie")
+  );
+  const user = session.get("user");
   const S3 = new S3Client({
     region: "auto",
     endpoint: process.env.CLOUDFLARE_S3!,
@@ -69,44 +99,53 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const formData = await request.formData();
   const file = formData.get("avatar");
-  console.log(file);
   if (!file || typeof file === "string") {
     return json({ error: "No file uploaded" }, { status: 400 });
   }
+
+  const validExtensions = ["png", "jpg", "jpeg", "webp"];
+  const extension = file.name.split(".").pop();
+  if (!validExtensions.includes(extension!)) {
+    return json({ error: "Invalid file type" }, { status: 400 });
+  }
+
+  const listCommand = new ListObjectsV2Command({
+    Bucket: "aylani",
+    Prefix: `uploads/${user.id}/`,
+  });
+  const { Contents } = await S3.send(listCommand);
+
+  if (Contents!.length > 0) {
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: "aylani",
+      Key: Contents![0].Key,
+    });
+    await S3.send(deleteCommand);
+  }
+  const buffer = await file.arrayBuffer();
+
   const upload = new Upload({
     client: S3,
     params: {
       Bucket: "aylani", // Replace with your R2 bucket name
-      Key: `uploads/${file.name}`, // File path and name in the bucket
-      Body: file.stream(), // The file data
+      Key: `uploads/${user.id}/${file.name}`, // File path and name in the bucket
+      Body: Buffer.from(buffer), // The file data
     },
   });
 
   try {
     const result = await upload.done();
-    console.log("Upload success:", result);
     return result;
   } catch (err) {
     console.error("Error uploading:", err);
     throw err;
   }
-  // const uploadHandler = unstable_composeUploadHandlers(
-  //   unstable_createFileUploadHandler({
-  //     maxPartSize: 5_000_000,
-  //     file: ({ filename }) => filename,
-  //   }),
-  //   // parse everything else into memory
-  //   unstable_createMemoryUploadHandler()
-  // );
-
-  // const formData = await unstable_parseMultipartFormData(
-  //   request,
-  //   uploadHandler
-  // );
 };
 
 export default function Profile() {
-  const { authenticated, commonGuilds, S3 } = useLoaderData<typeof loader>();
+  const { authenticated, commonGuilds, files, S3 } =
+    useLoaderData<typeof loader>();
+  const actionData: any = useActionData();
   let user = authenticated;
   return (
     <div className="p-4 md:p-10 mx-auto">
@@ -205,50 +244,62 @@ export default function Profile() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col items-center gap-4">
-                <img
-                  alt="Level Command Banner"
-                  className="rounded-lg"
-                  height="200"
-                  src="https://raw.githubusercontent.com/Wesleyvdk/images/main/1ec06e9864d623549da40633c679cc2a.webp"
-                  style={{
-                    aspectRatio: "400/200",
-                    objectFit: "cover",
-                  }}
-                  width="400"
-                />
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      Edit Banner
-                      <PencilIcon className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-slate-100 sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="flex">
+              {files.map((file: any) => (
+                <div
+                  className="flex flex-col items-center gap-4"
+                  key={file.key}
+                >
+                  <img
+                    alt="Level Command Banner"
+                    className="rounded-lg"
+                    height="200"
+                    src={file.url}
+                    style={{
+                      aspectRatio: "400/200",
+                      objectFit: "cover",
+                    }}
+                    width="400"
+                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
                         Edit Banner
                         <PencilIcon className="ml-2 h-4 w-4" />
-                      </DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <Form method="post" encType="multipart/form-data">
-                      <div className="flex items-center space-x-2">
-                        <div className="grid flex-1 gap-4">
-                          <Input id="avatar-input" type="file" name="avatar" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-slate-100 sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex">
+                          Edit Banner
+                          <PencilIcon className="ml-2 h-4 w-4" />
+                        </DialogTitle>
+                        <DialogDescription>
+                          Make changes to your profile here.
+                        </DialogDescription>
+                        {actionData?.error && (
+                          <p style={{ color: "red" }}>{actionData.error}</p>
+                        )}
+                      </DialogHeader>
+                      <Form method="post" encType="multipart/form-data">
+                        <div className="flex items-center space-x-2">
+                          <div className="grid flex-1 gap-4">
+                            <Input
+                              id="avatar-input"
+                              type="file"
+                              name="avatar"
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <DialogFooter className="mt-4">
-                        <Button type="submit" variant="outline">
-                          Save changes
-                        </Button>
-                      </DialogFooter>
-                    </Form>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                        <DialogFooter className="mt-4">
+                          <Button type="submit" variant="outline">
+                            Save changes
+                          </Button>
+                        </DialogFooter>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
