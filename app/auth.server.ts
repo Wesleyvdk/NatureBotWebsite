@@ -28,8 +28,7 @@ const discordStrategy = new DiscordStrategy(
   {
     clientID: process.env.DISCORD_CLIENT_ID!,
     clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-    callbackURL:
-      "https://aylanibot-shinxiss-projects.vercel.app/auth/discord/callback",
+    callbackURL: process.env.CALLBACK_URL!,
     // Provide all the scopes you want as an array
     scope: ["identify", "email", "guilds"],
   },
