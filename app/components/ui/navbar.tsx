@@ -36,13 +36,12 @@ export function Navbar({ user }: { user: any }) {
     { id: 2, name: "Servers", href: "/servers" },
     { id: 3, name: "Playground", href: "/playground" },
     { id: 4, name: "Shop", href: "/shop" },
-    { id: 5, name: "AnotherPlayground", href: "/anotherplayground" },
   ];
 
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-  const noUserPages = ["Home", "Playground", "AnotherPlayground"];
+  const noUserPages = ["Home", "Playground"];
   const noUserPagesItem = navigation.filter((item) =>
     noUserPages.includes(item.name)
   );

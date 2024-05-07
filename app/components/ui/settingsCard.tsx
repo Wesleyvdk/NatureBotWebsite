@@ -1,4 +1,3 @@
-import { Grid, Switch } from "@tremor/react";
 import React from "react";
 import {
   Card,
@@ -8,8 +7,18 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Switch } from "~/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
+import LevelSettings from "../settings/level";
+import { Label } from "./label";
 
-export default function SettingsCard({ settings }: { settings: Settings[] }) {
+export default function SettingsCard({
+  settings,
+  roles,
+}: {
+  settings: Settings[];
+  roles: Role[];
+}) {
   const categoryMap = new Map<string, { settings: SettingsSummary[] }>();
 
   settings.forEach((command) => {
@@ -48,7 +57,50 @@ export default function SettingsCard({ settings }: { settings: Settings[] }) {
     });
   };
   return (
-    <Grid numItemsSm={2} numItemsLg={3} className="gap-6">
+    <Tabs defaultValue={data[0].category} className="w-[400px]">
+      <TabsList>
+        {data.map((item) => (
+          <TabsTrigger key={item.category} value={item.category}>
+            {item.category}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {data.map((item) => (
+        <TabsContent key={item.category} value={item.category}>
+          {item.category === "levels" ? (
+            <div>
+              <div className="grid grid-cols-2">
+                {item.data.map((command) => (
+                  <div
+                    key={command.name}
+                    className="flex items-center justify-between space-x-2 py-4"
+                  >
+                    <Label htmlFor={command.name}>{command.name}</Label>
+                    <Switch id={command.name} />
+                  </div>
+                ))}
+              </div>
+              <LevelSettings roles={roles} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2">
+              {item.data.map((command) => (
+                <div
+                  key={command.name}
+                  className="flex items-center justify-between space-x-2 py-4"
+                >
+                  <Label htmlFor={command.name}>{command.name}</Label>
+                  <Switch id={command.name} />
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+
+  /* <Grid numItemsSm={2} numItemsLg={3} className="gap-6">
       {data.map((item) => (
         <Card key={item.category}>
           <CardHeader>
@@ -74,6 +126,5 @@ export default function SettingsCard({ settings }: { settings: Settings[] }) {
           ))}
         </Card>
       ))}
-    </Grid>
-  );
+    </Grid> */
 }

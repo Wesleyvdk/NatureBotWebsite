@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import "./tailwind.css";
+import "./globals.css";
 import Nav from "./components/nav";
 import { auth } from "~/auth.server";
 import { MetaFunction, LoaderFunction } from "@remix-run/node";

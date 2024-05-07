@@ -30,35 +30,33 @@ export default function Servers() {
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-2 gap-4">
           {commonGuilds.map((guild: Guild) => (
-            <Button key={guild.id} asChild>
-              <Link to={`/${guild.id}/dashboard`}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{guild.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-400">Members</p>
-                        <p className="text-lg font-semibold">
-                          {guild.approximate_member_count}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-400">Online</p>
-                        <p className="text-lg font-semibold">
-                          {guild.approximate_presence_count}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-400">Uptime</p>
-                        <p className="text-lg font-semibold">99.9%</p>
-                      </div>
+            <Link key={guild.id} to={`/${guild.id}/dashboard`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{guild.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-400">Members</p>
+                      <p className="text-lg font-semibold">
+                        {guild.approximate_member_count}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </Button>
+                    <div>
+                      <p className="text-sm text-gray-400">Online</p>
+                      <p className="text-lg font-semibold">
+                        {guild.approximate_presence_count}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Uptime</p>
+                      <p className="text-lg font-semibold">99.9%</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
@@ -69,7 +67,10 @@ export default function Servers() {
 async function fetchUserGuilds(accessToken: string) {
   try {
     let guilds: Guild[] = await fetch(
-      "https://discordapp.com/api/users/@me/guilds",
+      "https://discordapp.com/api/users/@me/guilds?" +
+        new URLSearchParams({
+          with_counts: "true",
+        }),
       {
         headers: {
           Authorization: "Bearer " + accessToken,
@@ -77,6 +78,7 @@ async function fetchUserGuilds(accessToken: string) {
         },
       }
     ).then((response) => response.json());
+    // console.log(guilds);
 
     return Array.isArray(guilds) ? guilds : [];
   } catch (error) {
@@ -88,7 +90,10 @@ async function fetchUserGuilds(accessToken: string) {
 async function fetchBotGuilds() {
   try {
     let botGuilds: Guild[] = await fetch(
-      "https://discordapp.com/api/users/@me/guilds",
+      "https://discordapp.com/api/users/@me/guilds?" +
+        new URLSearchParams({
+          with_counts: "true",
+        }),
       {
         headers: {
           Authorization: "Bot " + process.env.DISCORD_BOT_TOKEN,
@@ -96,6 +101,7 @@ async function fetchBotGuilds() {
         },
       }
     ).then((response) => response.json());
+    //console.log(botGuilds);
 
     return Array.isArray(botGuilds) ? botGuilds : [];
   } catch (error) {
