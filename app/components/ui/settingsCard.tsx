@@ -13,9 +13,11 @@ import LevelSettings from "../settings/level";
 import { Label } from "./label";
 
 export default function SettingsCard({
+  guildid,
   settings,
   roles,
 }: {
+  guildid: string;
   settings: Settings[];
   roles: Role[];
 }) {
@@ -80,7 +82,7 @@ export default function SettingsCard({
                   </div>
                 ))}
               </div>
-              <LevelSettings roles={roles} />
+              <LevelSettings roles={roles} guildid={guildid} />
             </div>
           ) : (
             <div className="grid grid-cols-2">

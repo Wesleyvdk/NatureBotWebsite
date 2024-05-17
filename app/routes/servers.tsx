@@ -96,12 +96,12 @@ async function fetchBotGuilds() {
         }),
       {
         headers: {
-          Authorization: "Bot " + process.env.DISCORD_BOT_TOKEN,
+          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
     ).then((response) => response.json());
-    //console.log(botGuilds);
+    /*  console.log(botGuilds); */
 
     return Array.isArray(botGuilds) ? botGuilds : [];
   } catch (error) {
