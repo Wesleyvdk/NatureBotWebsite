@@ -11,7 +11,7 @@ export async function updateSettings(
   const state = switchState ? 1 : 0;
   const setting = await db.settings.update({
     where: {
-      id: `929352993655124000${command}`,
+      id: `${guildId}${command}`,
     },
     data: { turnedOn: state },
   });

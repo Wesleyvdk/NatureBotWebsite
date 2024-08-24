@@ -23,7 +23,7 @@ model VampLevels {
 
 
 model botcommands {
- command_id Int @id @map("_id")
+ id String @id @map("_id")
  command String
  usage_count Int
  category String
