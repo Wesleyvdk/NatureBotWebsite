@@ -103,7 +103,7 @@ async function fetchBotGuilds() {
       }
     ).then((response) => response.json());
     console.log(process.env.DISCORD_BOT_TOKEN);
-    /*  console.log(botGuilds); */
+    console.log(botGuilds);
     return Array.isArray(botGuilds) ? botGuilds : [];
   } catch (error) {
     console.error(error);
