@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider     = "mongodb"
+  url          = env("MONGODB_DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -15,25 +15,24 @@ generator client {
 }
 
 model VampLevels {
-  id    Int     @id @unique
+  id    Int  @id @map("_id")
   name  String
   exp Int
   level Int
 }
 
 
-model BotCommands {
- command_id Int @id @unique
- command_name String
+model botcommands {
+ command_id Int @id @map("_id")
+ command String
  usage_count Int
  category String
- last_used DateTime
 
- @@map("bot_commands")
+ @@map("botcommands")
 }
 
 model Settings {
-  id String @id @unique
+  id String @id @map("_id")
   guildid String
   command String
   category String
@@ -41,7 +40,7 @@ model Settings {
 }
 
 model LevelRoles{
-  id Int @id @default(autoincrement())
+  id Int @id @map("_id")
   guildID String
   level Int
   roleID String @unique

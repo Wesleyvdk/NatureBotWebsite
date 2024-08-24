@@ -27,6 +27,11 @@ import {
 } from "~/components/ui/select";
 import React, { useState } from "react";
 import saveChanges from "~/lib/updateLevelRoles";
+import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
+dotenv.config();
+
+const mongoClient = new MongoClient(process.env.MONGODB_DATABASE_URL);
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -46,12 +51,18 @@ export async function action({ params, request }: ActionFunctionArgs) {
 }
 
 export let loader: LoaderFunction = async ({ request, params }) => {
-  const settings = await db.settings.findMany({
+  /*   const settings = await db.settings.findMany({
     where: {
       guildid: "929352993655124000",
     },
-  });
+  }); */
   const guildid: string | undefined = params.serverid;
+  await mongoClient.connect();
+  const settings = await mongoClient
+    .db("Aylani")
+    .collection(`${guildid}Settings`)
+    .find({})
+    .toArray();
   const authenticated = await auth.isAuthenticated(request, {
     failureRedirect: "/login",
   });

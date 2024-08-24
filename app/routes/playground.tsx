@@ -15,7 +15,8 @@ import { db } from "~/db.server";
 
 export let loader: LoaderFunction = async ({ request }) => {
   const authenticated = await auth.isAuthenticated(request, {});
-  const commands = await db.botCommands.findMany();
+
+  const commands = await db.botcommands.findMany();
   return { authenticated, commands };
 };
 
@@ -32,7 +33,7 @@ export default function PlaygroundPage() {
     }
     const categoryData = categoryMap.get(command.category);
     categoryData?.commands.push({
-      name: command.command_name,
+      name: command.command,
       value: command.usage_count,
     });
     categoryData!.totalUsage += command.usage_count;

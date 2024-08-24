@@ -7,7 +7,7 @@ interface leaderboard {
 
 interface Command {
   command_id: number;
-  command_name: string;
+  command: string;
   category: string;
   usage_count: number;
   last_used: Date;
