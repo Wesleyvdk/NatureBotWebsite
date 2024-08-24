@@ -102,13 +102,8 @@ async function fetchBotGuilds() {
         },
       }
     ).then((response) => response.json());
+    console.log(process.env.DISCORD_BOT_TOKEN);
     /*  console.log(botGuilds); */
-    let bot: any = await fetch("https://discordapp.com/api/users/@me", {
-      headers: {
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    }).then((response) => response.json());
     return Array.isArray(botGuilds) ? botGuilds : [];
   } catch (error) {
     console.error(error);
