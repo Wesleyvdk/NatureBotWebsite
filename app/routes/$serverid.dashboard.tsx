@@ -34,7 +34,6 @@ export default function DashboardPage() {
   const { authenticated, settings, guildid } = useLoaderData<typeof loader>();
   const params = useParams();
   const [value, setValue] = useState<EventProps>(null);
-  console.log(params);
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <Nav />

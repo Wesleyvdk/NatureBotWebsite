@@ -13,6 +13,7 @@ export let loader: LoaderFunction = async ({ request }) => {
   if (authenticated) {
     let userGuilds = await fetchUserGuilds(authenticated.accessToken);
     let botGuilds = await fetchBotGuilds();
+
     commonGuilds = userGuilds.filter((userGuild: any) =>
       botGuilds.some((botGuild: any) => botGuild.id === userGuild.id)
     );
@@ -102,7 +103,12 @@ async function fetchBotGuilds() {
       }
     ).then((response) => response.json());
     /*  console.log(botGuilds); */
-
+    let bot: any = await fetch("https://discordapp.com/api/users/@me", {
+      headers: {
+        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    }).then((response) => response.json());
     return Array.isArray(botGuilds) ? botGuilds : [];
   } catch (error) {
     console.error(error);

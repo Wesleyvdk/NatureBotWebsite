@@ -31,7 +31,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config();
 
-const mongoClient = new MongoClient(process.env.MONGODB_DATABASE_URL);
+const mongoClient = new MongoClient(process.env.MONGODB_DATABASE_URL || "");
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const formData = await request.formData();
